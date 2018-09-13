@@ -118,7 +118,7 @@ def error(bot, update, error):
 
 def main():
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater("TOKEN")
+    updater = Updater(api_key, request_kwargs=PROXY)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
