@@ -23,8 +23,7 @@ logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
 def planet_info(bot, update):
     planet = update.message.text.split()[1]
     try:
-        planet = getattr(e, planet)
-        planet = planet()
+        planet = getattr(e, planet)()
         planet.compute()
         constellation = e.constellation(planet)
         return update.message.reply_text(' 💫 '.join(constellation))
