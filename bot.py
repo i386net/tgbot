@@ -1,12 +1,13 @@
 """
-
+https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/timerbot.py
+https://github.com/python-telegram-bot/python-telegram-bot/wiki/Storing-user--and-chat-related-data
 """
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler, RegexHandler  # импорт классов
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 import logging
 from bot_key import api_key, PROXY
-
+from uuid import uuid4
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
                     filename='bot.log')
@@ -58,14 +59,36 @@ def regex_test(bot, update):
 def unknown(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Sorry, I didn't understand that command.")
 
+all_user_data = dict()
+
+def calc(bot, update, args):
+    chat_id = update.message.chat_id
+    user_id = update.message.from_user.id
+    key = str(uuid4())
+    print(user_id)
+    value = args[0]
+    print(value)
+    if not all_user_data.get(user_id):
+        all_user_data[user_id] = dict
+        print(all_user_data.keys())
+    user_data = all_user_data[user_id]
+    print(user_data)
+    user_data[key] = value
+    print(user_data)
+    update.message.reply_text(key)
+
+
+
+
 
 def main():
     mybot = Updater(api_key, request_kwargs=PROXY)
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('caps', caps, pass_args=True))
-    dp.add_handler(RegexHandler(r'^(\d+)$', regex_test))
+    #dp.add_handler(RegexHandler(r'^(\d+)$', regex_test))
     dp.add_handler(InlineQueryHandler(inline_caps))
+    dp.add_handler(CommandHandler('calc', calc, pass_args=True))
     dp.add_handler(MessageHandler(Filters.command, unknown))
     mybot.start_polling()
     mybot.idle()
