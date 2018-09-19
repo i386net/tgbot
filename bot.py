@@ -61,21 +61,8 @@ def unknown(bot, update):
 
 all_user_data = dict()
 
-def calc(bot, update, args):
-    chat_id = update.message.chat_id
-    user_id = update.message.from_user.id
-    key = str(uuid4())
-    print(user_id)
-    value = args[0]
-    print(value)
-    if not all_user_data.get(user_id):
-        all_user_data[user_id] = dict
-        print(all_user_data.keys())
-    user_data = all_user_data[user_id]
-    print(user_data)
-    user_data[key] = value
-    print(user_data)
-    update.message.reply_text(key)
+def calc(bot, update, user_data):
+    return
 
 
 
@@ -88,7 +75,7 @@ def main():
     dp.add_handler(CommandHandler('caps', caps, pass_args=True))
     #dp.add_handler(RegexHandler(r'^(\d+)$', regex_test))
     dp.add_handler(InlineQueryHandler(inline_caps))
-    dp.add_handler(CommandHandler('calc', calc, pass_args=True))
+    dp.add_handler(CommandHandler('calc', calc, pass_user_data=True))
     dp.add_handler(MessageHandler(Filters.command, unknown))
     mybot.start_polling()
     mybot.idle()
