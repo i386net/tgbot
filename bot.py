@@ -2,7 +2,7 @@
 
 """
 
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler  # импорт классов
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler, RegexHandler  # импорт классов
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 import logging
 from bot_key import api_key, PROXY
@@ -48,6 +48,12 @@ def inline_caps(bot, update):
     bot.answer_inline_query(update.inline_query.id, results)
 
 
+def regex_test(bot, update):
+    user_text = update.message.text
+    if not user_text:
+        return
+    bot.send_message(chat_id=update.message.chat_id, text='Result: {}'.format(int(user_text) * 10))
+
 
 def unknown(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Sorry, I didn't understand that command.")
@@ -57,8 +63,8 @@ def main():
     mybot = Updater(api_key, request_kwargs=PROXY)
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler('start', start))
-    #dp.add_handler(MessageHandler(Filters.text, echo))
     dp.add_handler(CommandHandler('caps', caps, pass_args=True))
+    dp.add_handler(RegexHandler(r'^(\d+)$', regex_test))
     dp.add_handler(InlineQueryHandler(inline_caps))
     dp.add_handler(MessageHandler(Filters.command, unknown))
     mybot.start_polling()
