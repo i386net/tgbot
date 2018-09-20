@@ -59,7 +59,18 @@ def regex_test(bot, update):
 def unknown(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Sorry, I didn't understand that command.")
 
-all_user_data = dict()
+
+def get_math_expretion(bot, update, user_data):
+    """Usage: /put value"""
+    # Generate ID and seperate value from command
+    key = '12345'
+    value = update.message.text.partition(' ')[2]
+
+    # Store value
+    user_data[key] = value
+
+    update.message.reply_text(key)
+
 
 def calc(bot, update, user_data):
     return
