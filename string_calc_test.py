@@ -1,25 +1,31 @@
-#l = ['1', '-', '2', '+', '5', '*', '10', ':', '0', '+', '1']
-import re
-# (-?\d+(\.\d+)?)|([-+*:])
 
-mark = ''
+import re
 l2 = list()
 input_txt = ''
-reg_check = re.compile(r'(-?\d+(\.\d+)?)|([-+*:])')
-
 while True:
-    input_txt = input('')
+    input_txt = input('>> ')
     if input_txt == '=':
         break
     else:
-        # TODO check is num and mark
-        if reg_check.fullmatch(input_txt):
+
+        if re.fullmatch(r'(-?\d+(\.\d+)?)|([-+*:])', input_txt):
             l2.append(input_txt)
             print('{} ...'.format(''.join(l2)))
 
-result = int(l2[0])
+#
+# TODO if int or float
+result = ''
+try:
+    result = int(l2[0])
+except ValueError:
+    pass
+try:
+    result = float(l2[0])
+except ValueError:
+    pass
+
+mark = ''
 for i in l2[1:]:
-    #n = 0
     if i in ['+', '-', '*', ':']:
         mark = i
         continue
