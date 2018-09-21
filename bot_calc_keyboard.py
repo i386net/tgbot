@@ -1,9 +1,8 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters# импорт классов
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters  # импорт классов
 from telegram import ReplyKeyboardRemove, ReplyKeyboardMarkup
 import logging
 from bot_key import api_key, PROXY
-# import re
-# from uuid import uuid4
+import re
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
                     filename='bot.log')
@@ -12,9 +11,9 @@ logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
 def kb_on(bot, update):
     chat_id = update.message.chat.id
     calc_kb = [['1', '2', '3', '+'],
-          ['4', '5', '6', '-'],
-          ['7', '8', '9', '*'],
-          ['.', '0', '=', ':']]
+               ['4', '5', '6', '-'],
+               ['7', '8', '9', '*'],
+               ['.', '0', '=', ':']]
     kb = ReplyKeyboardMarkup(keyboard=calc_kb)
     bot.send_message(chat_id=chat_id, text='Lets start!', reply_markup=kb)
 
@@ -26,40 +25,54 @@ def kb_kill(bot, update):
 
 
 def get_user_expression(bot, update, user_data):
-
+    pattern = re.compile(r'(\d+|[-+*])')
     key = 'user_expression'
     res_key = 'result'
     operators = '-+:*'
 
-    value = update.message.text
-    #user_data.setdefault(key, []).append(value)
-    #value = user_data.get(key, '') + update.message.text
-    #user_data[key] = value
-    #if value.endswith('='):
-    #    value = user_data[key][:-1]
-    #    result = user_data.get(res_key, user_data)
-    #    print(value)
-    user_expression = user_data.setdefault(key, [])
-    user_expression.append(value)
+    value = user_data.get(key, '') + update.message.text
+    bot.send_message(chat_id=update.message.chat_id, text='{} ...'.format(value))
+    user_data[key] = value
+
     if value.endswith('='):
-        tmp_list = []
-        n = ''
-        for v in user_data[key]:
-            if v not in operators:
+        fstring = pattern.findall(value)
+        result = user_data.get(res_key, fstring[0])
+        try:
+            result = float(result)
+        except ValueError:
+            print('Not a number')
+        user_data[res_key] = result
+        operator = ''
 
-                n += v
-                print(n)
-                tmp_list.append(v)
+        for i in fstring[1:]:
 
+            if i in operators:
+
+                operator = i
                 continue
+            # -- calculating -- #
+            try:
+                i = float(i)
+            except ValueError:
+                print('Not a number')
+            if operator == '+':
+                result += i
+            elif operator == '-':
+                result -= i
+            elif operator == '*':
+                result *= i
+            elif operator == ':':
+                try:
+                    operator /= i
+                except ZeroDivisionError:
+                    print('Division by Zero')
+                    result = None
+                    break
+        bot.send_message(chat_id=update.message.chat_id, text='{}{}'.format(value, result))
 
-            if v in operators:
-                n = ''
-                op = v
-                tmp_list.append(op)
 
-        print(tmp_list)
-    #print(user_data.values())
+        # ----- clear user_data ----- #
+        user_data.clear()
 
 
 
