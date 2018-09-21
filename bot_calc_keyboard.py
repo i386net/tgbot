@@ -24,8 +24,8 @@ def kb_kill(bot, update):
     bot.send_message(chat_id=chat_id, text="BB!", reply_markup=reply_markup)
 
 
-def get_user_expression(bot, update, user_data):
-    pattern = re.compile(r'(\d+|[-+*])')
+def calc_user_expression(bot, update, user_data):
+    pattern = re.compile(r'(\d+(\.\d+)?|[-+*:])')
     key = 'user_expression'
     res_key = 'result'
     operators = '-+:*'
@@ -35,8 +35,14 @@ def get_user_expression(bot, update, user_data):
     user_data[key] = value
 
     if value.endswith('='):
+        # print(value)
         fstring = pattern.findall(value)
-        result = user_data.get(res_key, fstring[0])
+        # print(fstring)
+        expression_list = []
+        for matched in fstring:
+            expression_list.append(matched[0])
+        # print(expression_list)
+        result = user_data.get(res_key, expression_list[0])
         try:
             result = float(result)
         except ValueError:
@@ -44,7 +50,8 @@ def get_user_expression(bot, update, user_data):
         user_data[res_key] = result
         operator = ''
 
-        for i in fstring[1:]:
+        for i in expression_list[1:]:
+
 
             if i in operators:
 
@@ -63,19 +70,15 @@ def get_user_expression(bot, update, user_data):
                 result *= i
             elif operator == ':':
                 try:
-                    operator /= i
+                    result /= i
                 except ZeroDivisionError:
                     print('Division by Zero')
                     result = None
                     break
         bot.send_message(chat_id=update.message.chat_id, text='{}{}'.format(value, result))
 
-
         # ----- clear user_data ----- #
         user_data.clear()
-
-
-
 
 
 def unknown(bot, update):
@@ -85,9 +88,7 @@ def unknown(bot, update):
 def main():
     bot = Updater(api_key, request_kwargs=PROXY)
     dp = bot.dispatcher
-
-    dp.add_handler(MessageHandler(Filters.text, get_user_expression, pass_user_data=True))
-
+    dp.add_handler(MessageHandler(Filters.text, calc_user_expression, pass_user_data=True))
     dp.add_handler(CommandHandler('kbon', kb_on))
     dp.add_handler(CommandHandler('kboff', kb_kill))
     dp.add_handler(MessageHandler(Filters.command, unknown))
