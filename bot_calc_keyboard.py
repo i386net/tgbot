@@ -25,7 +25,7 @@ def kb_kill(bot, update):
 
 
 def calc_user_expression(bot, update, user_data):
-    pattern = re.compile(r'(\d+(\.\d+)?|[-+*:])')
+    pattern = re.compile(r'((^-?\d+(\.\d+)?)|(\d+(\.\d+)?)|[-+*:])')
     key = 'user_expression'
     res_key = 'result'
     operators = '-+:*'
@@ -41,7 +41,7 @@ def calc_user_expression(bot, update, user_data):
         expression_list = []
         for matched in fstring:
             expression_list.append(matched[0])
-        # print(expression_list)
+        print(expression_list)
         result = user_data.get(res_key, expression_list[0])
         try:
             result = float(result)
@@ -54,7 +54,6 @@ def calc_user_expression(bot, update, user_data):
 
 
             if i in operators:
-
                 operator = i
                 continue
             # -- calculating -- #
