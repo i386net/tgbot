@@ -36,10 +36,10 @@ def calc_user_expression(bot, update, user_data):
 
     if value.endswith('='):
         # print(value)
-        fstring = pattern.findall(value)
-        # print(fstring)
+        found_pattern = pattern.findall(value)
+        # print(found_pattern)
         expression_list = []
-        for matched in fstring:
+        for matched in found_pattern:
             expression_list.append(matched[0])
         print(expression_list)
         result = user_data.get(res_key, expression_list[0])
@@ -51,8 +51,6 @@ def calc_user_expression(bot, update, user_data):
         operator = ''
 
         for i in expression_list[1:]:
-
-
             if i in operators:
                 operator = i
                 continue
